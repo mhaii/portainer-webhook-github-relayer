@@ -2,6 +2,7 @@ import Axios from 'axios'
 import { AxiosInstance } from 'axios'
 import { IStackInfo } from '../interfaces/portainer/response/IStackInfo'
 import { IWebhookStack } from '../interfaces/portainer/IWebhookStack'
+import Locals from './Locals'
 
 class Portainer {
   public static readonly instance: Portainer = new Portainer()
@@ -13,11 +14,10 @@ class Portainer {
   }
 
   private init(): void {
-    const host = process.env['PORTAINER_HOST']
-    const apiKey = process.env['PORTAINER_API_TOKEN']
+    const { portainerHost, portainerApiKey } = Locals.config()
 
-    this.axios.defaults.baseURL = host
-    this.axios.defaults.headers.common['X-API-Key'] = apiKey
+    this.axios.defaults.baseURL = portainerHost
+    this.axios.defaults.headers.common['X-API-Key'] = portainerApiKey
   }
 
   async listWebhookStacks(): Promise<IWebhookStack[]> {

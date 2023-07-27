@@ -5,19 +5,16 @@ import * as expressValidator from 'express-validator'
 
 import Log from './Log'
 import Locals from '../providers/Locals'
+import * as Crypto from 'crypto'
 
 class Http {
   public static mount(_express: Application): Application {
     Log.info('Booting the \'HTTP\' middleware...')
 
     // Enables the request body parser
-    _express.use(bodyParser.json({
-      limit: Locals.config().maxUploadLimit,
-    }))
+    _express.use(bodyParser.json())
 
     _express.use(bodyParser.urlencoded({
-      limit: Locals.config().maxUploadLimit,
-      parameterLimit: Locals.config().maxParameterLimit,
       extended: false,
     }))
 
@@ -27,10 +24,34 @@ class Http {
     // Enables the request payload validator
     _express.use(expressValidator())
 
+    const webhookSecret = Locals.config().githubWebhookSecret
+    if (webhookSecret) {
+      _express.use((req, res, next) => {
+        const isValid = Http.validateWebhook(
+          webhookSecret,
+          req.body,
+          req.headers['x-hub-signature-256'] as string,
+        )
+
+        return isValid
+          ? next()
+          : res.status(401).send({ error: 'Unauthorized' })
+      })
+    }
+
     // Enables the "gzip" / "deflate" compression for response
     _express.use(compress())
 
     return _express
+  }
+
+  private static validateWebhook(secret: string, body: any, signature: string): boolean {
+    const digest = Crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(body))
+      .digest('hex')
+
+    return `sha256=${digest}` === signature
   }
 }
 

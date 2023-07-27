@@ -23,6 +23,7 @@ The parameters are split into two halves, separated by a colon, the left hand si
 *Optional Settings:*
 
 * `-e API_PREFIX=/webhook` - Path prefix, in case image is deployed behind reverse proxy
+* `-e WEBHOOK_SECRET=xxxxxx` - Will validate payload with secret if set 
 
 ## Docker Compose
 

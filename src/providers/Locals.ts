@@ -4,21 +4,26 @@ import * as dotenv from 'dotenv'
 import * as process from 'process'
 
 class Locals {
-  public static config(): any {
+  public static config() {
     dotenv.config({ path: path.join(__dirname, '../../.env') })
-
-    const url = process.env.APP_URL || `http://0.0.0.0:${process.env.PORT}`
-    const port = process.env.PORT || 4040
 
     const apiPrefix = process.env.API_PREFIX || ''
 
-    const jwtExpiresIn = process.env.JWT_EXPIRES_IN || 3
+    const url = process.env.APP_URL || `http://0.0.0.0:${process.env.PORT}/${apiPrefix}`
+    const port = +process.env.PORT || 4040
+
+    const portainerHost = process.env.PORTAINER_HOST
+    const portainerApiKey = process.env.PORTAINER_API_TOKEN
+
+    const githubWebhookSecret = process.env.WEBHOOK_SECRET
 
     return {
       apiPrefix,
-      jwtExpiresIn,
       port,
       url,
+      portainerHost,
+      portainerApiKey,
+      githubWebhookSecret,
     }
   }
 
