@@ -20,8 +20,16 @@ on:
 
 
 jobs:
+  test:
+    name: Run test
+    uses: pukenicorn/gh-workflows/.github/workflows/test.yml@main
+    with:
+      language: node
+      registry: https://npm.pkg.github.com
+
   publish-docker:
     name: Build and publish docker image
+    needs: [ test ]
     uses: pukenicorn/gh-workflows/.github/workflows/publish-docker.yml@main
     with:
       registry: ghcr.io
