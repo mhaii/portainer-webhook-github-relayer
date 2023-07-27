@@ -6,7 +6,7 @@ import { Request, Response } from 'express'
 
 class Main {
   public static async index(req: Request, res: Response) {
-    await Main.execute(req.body)
+    void Main.execute(req.body)
     return res.json({})
   }
 
