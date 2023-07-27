@@ -1,21 +1,39 @@
-FROM node:10.5.0
+FROM node:20-alpine as base
 
-WORKDIR /usr/src/app
+ENV NODE_ENV=production
+ENV PATH=/app/node_modules/.bin:$PATH
 
-RUN npm install -g typescript
+WORKDIR /app
 
-RUN npm install -g nodemon
+COPY package.json yarn.lock ./
 
-COPY package*.json ./
+######################################################################################
 
-RUN npm install
+FROM base as dependencies
+ENV PATH=/app/prod_modules/.bin:$PATH
 
-COPY . .
+RUN SKIP_POSTINSTALL=1 yarn install --non-interactive --immutable --prod --modules-folder=prod_modules
+RUN SKIP_POSTINSTALL=1 yarn install --non-interactive --immutable --prod=false
 
-EXPOSE 4040 5550
+######################################################################################
 
-#Build to project
-RUN npm run build
+FROM base as builder
 
-# Run node server
-CMD npm run start
+COPY tsconfig*.json ./
+
+COPY --from=dependencies /app/node_modules /app/node_modules
+
+COPY src ./src
+
+RUN yarn build
+
+######################################################################################
+
+FROM base as output
+
+COPY .env .
+COPY --from=dependencies /app/prod_modules /app/node_modules
+COPY --from=builder /app/dist /app/dist
+
+ENTRYPOINT ["yarn"]
+CMD ["start"]

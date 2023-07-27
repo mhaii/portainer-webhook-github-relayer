@@ -1,0 +1,30 @@
+name: Test, build and publish packages
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-${{ github.event_name }}
+  cancel-in-progress: true
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to the publish package
+        type: string
+        required: true
+
+
+jobs:
+  publish-docker:
+    name: Build and publish docker image
+    uses: pukenicorn/gh-workflows/.github/workflows/publish-docker.yml@main
+    with:
+      registry: ghcr.io
+      ignore-file-changes: ${{ (github.event_name == 'release' && github.event.action == 'published') || github.event_name == 'workflow_dispatch' }}
+    secrets:
+      REGISTRY_USERNAME: ${{ github.actor }}
