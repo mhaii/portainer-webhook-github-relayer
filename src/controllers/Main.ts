@@ -47,7 +47,13 @@ class Main {
 
     Log.info(`Updated ${stackNeededToCall.length} stacks, ${stackNeededToCall.length - failedStacks.length} success, ${failedStacks.length} failed`)
     failedStacks.forEach(({ stack, err }) => {
-      Log.error(`Stack ${stack.id} failed to update, error message is ${err.message}`)
+      const errorMsg = (err as any).response?.data?.details
+      if (errorMsg) {
+        const errors = errorMsg.split('\n').map(msg => msg.trim()).filter(msg => msg)
+        Log.error(`Stack ${stack.id} failed to update, error message is ${JSON.stringify(errors)}`)
+      } else {
+        Log.error(`Stack ${stack.id} failed to update, error message is ${err.message}`)
+      }
     })
   }
 }
