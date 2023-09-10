@@ -7,7 +7,7 @@ This image will accept github push webhook and update Portainer stacks based on 
 ```shell
 docker run \
   -p 80:4040 \
-  -e API_PREFIX="" \ # Optional, i
+  -e API_PREFIX="" \ # Optional
   -e PORTAINER_HOST=xxxxxx \
   -e PORTAINER_API_TOKEN=xxxxxx \
   ghcr.io/mhaii/portainer-webhook-github-relayer:latest
@@ -17,13 +17,15 @@ docker run \
 
 The parameters are split into two halves, separated by a colon, the left hand side representing the host and the right the container side.
 
-* `-e PORTAINER_HOST=xxxxxx` - Full path to portainer e.g. `https://portainer:9000`
+* `-e PORTAINER_HOST=xxxxxx` - Full base uri to portainer e.g. `https://portainer:9000`
 * `-e PORTAINER_API_TOKEN=xxxxxx` - Access token, generated from `User settings > Access tokens`
+* `-e PORTAINER_API_TOKEN_FILE=xxxxxx` - Path to mounted secret file, Alternative to `PORTAINER_API_TOKEN`
 
 *Optional Settings:*
 
 * `-e API_PREFIX=/webhook` - Path prefix, in case image is deployed behind reverse proxy
-* `-e WEBHOOK_SECRET=xxxxxx` - Will validate payload with secret if set 
+* `-e GITHUB_WEBHOOK_SECRET=xxxxxx` - Will validate payload with secret if set 
+* `-e GITHUB_WEBHOOK_SECRET_FILE=xxxxxx` - Path to mounted secret file, Alternative to `GITHUB_WEBHOOK_SECRET`  
 
 ## Docker Compose
 
