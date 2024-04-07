@@ -24,28 +24,13 @@ class Http {
     // Enables the request payload validator
     _express.use(expressValidator())
 
-    const webhookSecret = Locals.configs.githubWebhookSecret
-    if (webhookSecret) {
-      _express.use((req, res, next) => {
-        const isValid = Http.validateWebhook(
-          webhookSecret,
-          req.body,
-          req.headers['x-hub-signature-256'] as string,
-        )
-
-        return isValid
-          ? next()
-          : res.status(401).send({ error: 'Unauthorized' })
-      })
-    }
-
     // Enables the "gzip" / "deflate" compression for response
     _express.use(compress())
 
     return _express
   }
 
-  private static validateWebhook(secret: string, body: any, signature: string): boolean {
+  static validateWebhook(secret: string, body: any, signature: string): boolean {
     const digest = Crypto
       .createHmac('sha256', secret)
       .update(JSON.stringify(body))
