@@ -44,8 +44,12 @@ class Locals {
         return
       } catch (e) {
         const errorMsg = `Error loading [${envName}] from file`
-        Log.error(errorMsg)
-        if (!optional) throw new Error(errorMsg)
+        if (optional) {
+          Log.info(errorMsg)
+        } else {
+          Log.error(errorMsg)
+          throw new Error(errorMsg)
+        }
       }
     }
     const envValue = process.env[envName]
@@ -53,8 +57,12 @@ class Locals {
       Log.info(`Loaded [${envName}] from env`)
     } else {
       const errorMsg = `Error loading [${envName}] from env`
-      Log.error(errorMsg)
-      if (!optional) throw new Error(errorMsg)
+      if (optional) {
+        Log.info(errorMsg)
+      } else {
+        Log.error(errorMsg)
+        throw new Error(errorMsg)
+      }
     }
     return envValue
   }
