@@ -43,7 +43,7 @@ class Locals {
       try {
         const fileSecret = fs.readFileSync(envFileValue).toString()
         Log.info(`Loaded [${envName}] from file`)
-        return
+        return fileSecret
       } catch (e) {
         const errorMsg = `Error loading [${envName}] from file`
         if (optional) {
