@@ -14,7 +14,7 @@ class Portainer {
   }
 
   private init(): void {
-    const { portainerHost, portainerApiKey } = Locals.config()
+    const { portainerHost, portainerApiKey } = Locals.configs
 
     this.axios.defaults.baseURL = portainerHost
     this.axios.defaults.headers.common['X-API-Key'] = portainerApiKey

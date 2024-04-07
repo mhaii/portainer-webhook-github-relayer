@@ -6,7 +6,7 @@ import apiRouter from './../routes/Api'
 
 class Routes {
   public mountApi(_express: Application): Application {
-    const apiPrefix = Locals.config().apiPrefix
+    const apiPrefix = Locals.configs.apiPrefix
     Log.info('Routes :: Mounting API Routes...')
 
     return _express.use(`/${apiPrefix}`, apiRouter)

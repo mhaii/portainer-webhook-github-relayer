@@ -26,7 +26,7 @@ class Express {
     this.express = Routes.mountApi(this.express)
   }
   public init(): any {
-    const port: number = Locals.config().port
+    const port: number = Locals.configs.port
 
     // Registering Exception / Error Handlers
     this.express.use(ExceptionHandler.logErrors)
