@@ -1,5 +1,4 @@
-import Axios from 'axios'
-import { AxiosInstance } from 'axios'
+import Axios, { AxiosInstance } from 'axios'
 import { IStackInfo } from '../interfaces/portainer/response/IStackInfo'
 import { IWebhookStack } from '../interfaces/portainer/IWebhookStack'
 import Locals from './Locals'
@@ -18,6 +17,11 @@ class Portainer {
 
     this.axios.defaults.baseURL = portainerHost
     this.axios.defaults.headers.common['X-API-Key'] = portainerApiKey
+  }
+
+  async info(): Promise<object> {
+    const resp = await this.axios.get('/api/system/info')
+    return resp.data
   }
 
   async listWebhookStacks(): Promise<IWebhookStack[]> {

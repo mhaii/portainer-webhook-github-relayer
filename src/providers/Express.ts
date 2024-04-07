@@ -29,9 +29,6 @@ class Express {
     const port: number = Locals.configs.port
 
     // Registering Exception / Error Handlers
-    this.express.use(ExceptionHandler.logErrors)
-    this.express.use(ExceptionHandler.clientErrorHandler)
-    this.express.use(ExceptionHandler.errorHandler)
     this.express = ExceptionHandler.notFoundHandler(this.express)
 
     // Start the server on the specified port
