@@ -4,19 +4,21 @@ import * as path from 'path'
 import * as dotenv from 'dotenv'
 import * as process from 'process'
 
+import Log from '../middlewares/Log'
+
 class Locals {
   public static config() {
     dotenv.config({path: path.join(__dirname, '../../.env')})
 
-    const apiPrefix = process.env.API_PREFIX || ''
+    const apiPrefix = Locals.tryLoadEnv('API_PREFIX', true) || ''
+    const port = +Locals.tryLoadEnv('PORT', true) || 4040
 
-    const url = process.env.APP_URL || `http://0.0.0.0:${process.env.PORT}/${apiPrefix}`
-    const port = +process.env.PORT || 4040
+    const url = Locals.tryLoadEnv('APP_URL', true) || `http://0.0.0.0:${port}/${apiPrefix}`
 
-    const portainerHost = process.env.PORTAINER_HOST
-    const portainerApiKey = Locals.tryLoadEnvSecretFile('PORTAINER_API_TOKEN')
+    const portainerHost = Locals.tryLoadEnv('PORTAINER_HOST')
+    const portainerApiKey = Locals.tryLoadEnv('PORTAINER_API_TOKEN')
 
-    const githubWebhookSecret = Locals.tryLoadEnvSecretFile('GITHUB_WEBHOOK_SECRET')
+    const githubWebhookSecret = Locals.tryLoadEnv('GITHUB_WEBHOOK_SECRET', true)
 
     return {
       apiPrefix,
@@ -33,15 +35,28 @@ class Locals {
     return _express
   }
 
-  private static tryLoadEnvSecretFile(envName: string): string | undefined {
+  private static tryLoadEnv(envName: string, optional = false): string | undefined {
     const envFileValue = process.env[envName + '_FILE']
     if (envFileValue) {
       try {
-        return fs.readFileSync(envFileValue).toString()
-      } catch (_) {
+        const fileSecret = fs.readFileSync(envFileValue).toString()
+        Log.info(`Loaded [${envName}] from file`)
+        return
+      } catch (e) {
+        const errorMsg = `Error loading [${envName}] from file`
+        Log.error(errorMsg)
+        if (!optional) throw new Error(errorMsg)
       }
     }
-    return process.env[envName]
+    const envValue = process.env[envName]
+    if (envValue) {
+      Log.info(`Loaded [${envName}] from env`)
+    } else {
+      const errorMsg = `Error loading [${envName}] from env`
+      Log.error(errorMsg)
+      if (!optional) throw new Error(errorMsg)
+    }
+    return envValue
   }
 }
 
