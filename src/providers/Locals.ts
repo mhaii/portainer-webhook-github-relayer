@@ -43,6 +43,7 @@ class Locals {
       try {
         const fileSecret = fs.readFileSync(envFileValue).toString()
         Log.info(`Loaded [${envName}] from file`)
+        Log.debug(`ENV ${envName}: ${fileSecret}`)
         return fileSecret
       } catch (e) {
         const errorMsg = `Error loading [${envName}] from file`
@@ -57,6 +58,7 @@ class Locals {
     const envValue = process.env[envName]
     if (envValue) {
       Log.info(`Loaded [${envName}] from env`)
+      Log.debug(`ENV ${envName}: "${envValue}"`)
     } else {
       const errorMsg = `Error loading [${envName}] from env`
       if (optional) {

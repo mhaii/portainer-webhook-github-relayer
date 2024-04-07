@@ -1,4 +1,10 @@
 class Log {
+  public debug(_string: string): void {
+    if (process.env.DEBUG) {
+      console.debug('DEBUG', _string)
+    }
+  }
+
   public info(_string: string): void {
     console.info('INFO', _string)
   }
