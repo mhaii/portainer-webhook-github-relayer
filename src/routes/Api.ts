@@ -4,6 +4,7 @@ import MainController from '../controllers/Main'
 
 const router = Router()
 
-router.post('/', MainController.index)
+router.get('/', MainController.healthCheck)
+router.post('/', MainController.webhook)
 
 export default router

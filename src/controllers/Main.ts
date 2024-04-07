@@ -5,9 +5,21 @@ import Log from '../middlewares/Log'
 import { Request, Response } from 'express'
 
 class Main {
-  public static async index(req: Request, res: Response) {
-    void Main.execute(req.body)
-    return res.json({})
+  public static async healthCheck(req: Request, res: Response) {
+    try {
+      const portainerStatus = await Portainer.instance.info()
+      return res.json({ message: 'OK' })
+    } catch (e) {
+      Log.error(JSON.stringify(e))
+      return res.json({ message: e.message }).status(500)
+    }
+  }
+
+  public static async webhook(req: Request, res: Response) {
+    void Main
+      .execute(req.body)
+      .catch((e) => { Log.error(JSON.stringify(e)) })
+    return res.json({ message: 'OK' })
   }
 
   private static async execute(param: IGithubRequest): Promise<any> {
