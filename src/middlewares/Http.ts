@@ -24,7 +24,7 @@ class Http {
     // Enables the request payload validator
     _express.use(expressValidator())
 
-    const webhookSecret = Locals.config().githubWebhookSecret
+    const webhookSecret = Locals.configs.githubWebhookSecret
     if (webhookSecret) {
       _express.use((req, res, next) => {
         const isValid = Http.validateWebhook(

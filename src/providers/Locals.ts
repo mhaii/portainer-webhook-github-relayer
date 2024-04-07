@@ -1,4 +1,4 @@
-import {Application} from 'express'
+import { Application } from 'express'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as dotenv from 'dotenv'
@@ -7,8 +7,10 @@ import * as process from 'process'
 import Log from '../middlewares/Log'
 
 class Locals {
-  public static config() {
-    dotenv.config({path: path.join(__dirname, '../../.env')})
+  public static configs = Locals.loadConfigs()
+
+  private static loadConfigs() {
+    dotenv.config({ path: path.join(__dirname, '../../.env') })
 
     const apiPrefix = Locals.tryLoadEnv('API_PREFIX', true) || ''
     const port = +Locals.tryLoadEnv('PORT', true) || 4040
@@ -31,7 +33,7 @@ class Locals {
   }
 
   public static init(_express: Application): Application {
-    _express.locals.app = this.config()
+    _express.locals.app = this.configs
     return _express
   }
 
