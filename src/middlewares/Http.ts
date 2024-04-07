@@ -27,6 +27,7 @@ class Http {
     const webhookSecret = Locals.configs.githubWebhookSecret
     if (webhookSecret) {
       _express.use((req, res, next) => {
+
         const isValid = Http.validateWebhook(
           webhookSecret,
           req.body,
@@ -45,7 +46,7 @@ class Http {
     return _express
   }
 
-  private static validateWebhook(secret: string, body: any, signature: string): boolean {
+  static validateWebhook(secret: string, body: any, signature: string): boolean {
     const digest = Crypto
       .createHmac('sha256', secret)
       .update(JSON.stringify(body))

@@ -3,11 +3,14 @@ import { IGithubRequest } from '../interfaces/github/request/IGithubRequest'
 import { IWebhookStack } from '../interfaces/portainer/IWebhookStack'
 import Log from '../middlewares/Log'
 import { Request, Response } from 'express'
+import Locals from '../providers/Locals'
+import Http from '../middlewares/Http'
 
 class Main {
   public static async healthCheck(req: Request, res: Response) {
     try {
       const portainerStatus = await Portainer.instance.info()
+      Log.info(`Portainer status: ${JSON.stringify(portainerStatus)}`)
       return res.json({ message: 'OK' })
     } catch (e) {
       Log.error(JSON.stringify(e))
@@ -16,9 +19,25 @@ class Main {
   }
 
   public static async webhook(req: Request, res: Response) {
+    const webhookSecret = Locals.configs.githubWebhookSecret
+    if (webhookSecret) {
+      const isValid = Http.validateWebhook(
+        webhookSecret,
+        req.body,
+        req.headers['x-hub-signature-256'] as string,
+      )
+
+      if (!isValid) {
+        Log.error('Webhook triggered but contains invalid signature')
+        return res.status(401).send({ error: 'Unauthorized' })
+      }
+    }
+
     void Main
       .execute(req.body)
-      .catch((e) => { Log.error(JSON.stringify(e)) })
+      .catch((e) => {
+        Log.error(JSON.stringify(e))
+      })
     return res.json({ message: 'OK' })
   }
 
